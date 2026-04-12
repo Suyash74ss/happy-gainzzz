@@ -1,5 +1,6 @@
 "use client"
 
+import axios from "axios";
 import { useState } from "react"
 import { useCart } from "@/context/cart-context"
 import { Header } from "@/components/header"
@@ -83,16 +84,31 @@ export default function CheckoutPage() {
   }
 
   const handlePaymentSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (validatePayment()) {
+  e.preventDefault()
+
+  if (validatePayment()) {
+    try {
       setIsProcessing(true)
-      // Simulate payment processing
-      await new Promise(resolve => setTimeout(resolve, 2000))
+
+      await axios.post("https://backend-api-i2oh.onrender.com/api/orders/create", {
+  name: address.fullName,
+  phone: address.phone,
+  address: `${address.addressLine1}, ${address.city}, ${address.state}, ${address.pincode}`,
+  items: items,
+  total: total
+})
+
       setIsProcessing(false)
       setCurrentStep("confirmation")
       clearCart()
+
+    } catch (err) {
+      console.error(err)
+      setIsProcessing(false)
+      alert("Error placing order")
     }
   }
+}
 
   const formatCardNumber = (value: string) => {
     const v = value.replace(/\s+/g, "").replace(/[^0-9]/gi, "")
@@ -431,7 +447,7 @@ export default function CheckoutPage() {
                       <div className="relative w-16 h-16 rounded-lg overflow-hidden bg-muted flex-shrink-0">
                         <Image
                           src={item.image}
-                          alt={item.name}
+                          alt={item.name || "product image"}
                           fill
                           className="object-cover"
                         />

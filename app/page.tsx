@@ -6,11 +6,16 @@ import axios from "axios"
 export default function HomePage() {
 
   const [products, setProducts] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
 
-  // ✅ FETCH PRODUCTS
+  // 🔥 FETCH PRODUCTS
   useEffect(() => {
     axios.get("https://backend-api-i2oh.onrender.com/api/products")
-      .then(res => setProducts(res.data))
+      .then(res => {
+        setProducts(res.data)
+        setLoading(false)
+      })
+      .catch(() => setLoading(false))
   }, [])
 
   return (
@@ -18,68 +23,85 @@ export default function HomePage() {
       minHeight: "100vh",
       background: "#0d0d0d",
       color: "#fff",
-      padding: "20px"
+      fontFamily: "Arial"
     }}>
 
-      {/* 🔥 HEADER */}
-      <h1 style={{
-        fontSize: "32px",
-        marginBottom: "20px",
-        textAlign: "center"
+      {/* 🔥 HERO SECTION */}
+      <div style={{
+        textAlign: "center",
+        padding: "60px 20px"
       }}>
-        🚀 Our Products
-      </h1>
+        <h1 style={{ fontSize: "40px" }}>🚀 Happy Gainz</h1>
+        <p>Premium Nutrition for Kids 💪</p>
+      </div>
 
-      {/* 🛒 PRODUCT GRID */}
+      {/* 🔥 FEATURES */}
       <div style={{
         display: "flex",
-        flexWrap: "wrap",
-        gap: "20px",
-        justifyContent: "center"
+        justifyContent: "center",
+        gap: "30px",
+        marginBottom: "40px"
       }}>
+        <div>🚚 Free Shipping</div>
+        <div>💰 Cash on Delivery</div>
+        <div>🔄 Easy Returns</div>
+      </div>
 
-        {products.map((p) => (
-          <div key={p._id} style={{
-            width: "220px",
-            background: "rgba(255,255,255,0.05)",
-            backdropFilter: "blur(10px)",
-            borderRadius: "15px",
-            padding: "15px",
-            textAlign: "center",
-            transition: "0.3s"
-          }}>
+      {/* 🔥 PRODUCTS */}
+      <div style={{ padding: "20px" }}>
+        <h2 style={{ textAlign: "center", marginBottom: "20px" }}>
+          🔥 Our Products
+        </h2>
 
-            <img
-              src={p.image}
-              style={{
-                width: "100%",
-                height: "150px",
-                objectFit: "cover",
-                borderRadius: "10px"
-              }}
-            />
+        {loading && <p style={{ textAlign: "center" }}>Loading...</p>}
 
-            <h3 style={{ marginTop: "10px" }}>{p.title}</h3>
+        <div style={{
+          display: "flex",
+          flexWrap: "wrap",
+          justifyContent: "center",
+          gap: "20px"
+        }}>
 
-            <p style={{ color: "#00e676", fontSize: "18px" }}>
-              ₹{p.price}
-            </p>
-
-            <button style={{
-              marginTop: "10px",
-              padding: "8px 15px",
-              background: "#00c853",
-              border: "none",
-              borderRadius: "8px",
-              color: "#fff",
-              cursor: "pointer"
+          {products.map((p) => (
+            <div key={p._id} style={{
+              width: "220px",
+              background: "#111",
+              padding: "15px",
+              borderRadius: "12px",
+              textAlign: "center"
             }}>
-              Add to Cart
-            </button>
 
-          </div>
-        ))}
+              <img
+                src={p.image}
+                style={{
+                  width: "100%",
+                  height: "150px",
+                  objectFit: "cover",
+                  borderRadius: "10px"
+                }}
+              />
 
+              <h3>{p.title}</h3>
+
+              <p style={{ color: "#00e676", fontSize: "18px" }}>
+                ₹{p.price}
+              </p>
+
+              <button style={{
+                marginTop: "10px",
+                padding: "8px 15px",
+                background: "#00c853",
+                border: "none",
+                borderRadius: "8px",
+                color: "#fff"
+              }}>
+                Add to Cart
+              </button>
+
+            </div>
+          ))}
+
+        </div>
       </div>
 
     </div>

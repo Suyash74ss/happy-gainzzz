@@ -4,22 +4,41 @@ import { useEffect, useState } from "react"
 import axios from "axios"
 
 export default function AdminPage() {
+
+  // ✅ STATES
   const [orders, setOrders] = useState<any[]>([])
+  const [stats, setStats] = useState({
+    totalOrders: 0,
+    totalRevenue: 0,
+    avgOrderValue: 0
+  })
 
-  useEffect(() => {
-    fetchOrders()
-  }, [])
-
+  // ✅ FETCH ORDERS
   const fetchOrders = async () => {
     const res = await axios.get("https://backend-api-i2oh.onrender.com/api/orders")
     setOrders(res.data)
   }
 
+  // ✅ FETCH DASHBOARD
+  const fetchDashboard = async () => {
+    const res = await axios.get("https://backend-api-i2oh.onrender.com/api/dashboard")
+    setStats(res.data)
+  }
+
+  // ✅ LOAD DATA
+  useEffect(() => {
+    fetchOrders()
+    fetchDashboard()
+  }, [])
+
+  // ✅ DELETE
   const deleteOrder = async (id: string) => {
     await axios.delete(`https://backend-api-i2oh.onrender.com/api/orders/${id}`)
     fetchOrders()
+    fetchDashboard()
   }
 
+  // ✅ UPDATE STATUS
   const updateStatus = async (id: string, status: string) => {
     await axios.put(`https://backend-api-i2oh.onrender.com/api/orders/${id}`, { status })
     fetchOrders()
@@ -27,8 +46,28 @@ export default function AdminPage() {
 
   return (
     <div style={{ padding: "20px", background: "#111", minHeight: "100vh", color: "#fff" }}>
+
       <h1 style={{ fontSize: "30px", marginBottom: "20px" }}>📦 Admin Dashboard</h1>
 
+      {/* ✅ DASHBOARD */}
+      <div style={{ display: "flex", gap: "20px", marginBottom: "20px" }}>
+        <div style={{ background: "#222", padding: "20px", borderRadius: "10px" }}>
+          <h3>Total Orders</h3>
+          <p>{stats.totalOrders}</p>
+        </div>
+
+        <div style={{ background: "#222", padding: "20px", borderRadius: "10px" }}>
+          <h3>Total Revenue</h3>
+          <p>₹{stats.totalRevenue}</p>
+        </div>
+
+        <div style={{ background: "#222", padding: "20px", borderRadius: "10px" }}>
+          <h3>Avg Order</h3>
+          <p>₹{Math.round(stats.avgOrderValue)}</p>
+        </div>
+      </div>
+
+      {/* ✅ ORDERS */}
       {orders.map((order, i) => (
         <div key={i} style={{
           background: "#222",
@@ -54,6 +93,7 @@ export default function AdminPage() {
           </button>
         </div>
       ))}
+
     </div>
   )
 }

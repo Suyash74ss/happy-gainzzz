@@ -3,154 +3,38 @@
 import { useEffect, useState } from "react"
 import axios from "axios"
 
-export default function AdminPage() {
+export default function HomePage() {
 
-  const [orders, setOrders] = useState<any[]>([])
   const [products, setProducts] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
 
-  const [newProduct, setNewProduct] = useState({
-    title: "",
-    price: "",
-    image: "",
-    description: "",
-    sku: "",
-    flavour: ""
-  })
-
-  const [stats, setStats] = useState({
-    totalOrders: 0,
-    totalRevenue: 0,
-    avgOrderValue: 0
-  })
-
-
-  // ================= FETCH =================
-
-  const fetchOrders = async () => {
-
-    const res = await axios.get(
-      "https://backend-api-i2oh.onrender.com/api/orders"
-    )
-
-    setOrders(res.data)
-  }
-
+  // ================= FETCH PRODUCTS =================
 
   const fetchProducts = async () => {
 
-    const res = await axios.get(
-      "https://backend-api-i2oh.onrender.com/api/products"
-    )
+    try {
 
-    setProducts(res.data)
+      const res = await axios.get(
+        "https://backend-api-i2oh.onrender.com/api/products"
+      )
+
+      setProducts(res.data)
+
+    } catch (err) {
+
+      console.log(err)
+
+    } finally {
+
+      setLoading(false)
+    }
   }
-
-
-  const fetchDashboard = async () => {
-
-    const res = await axios.get(
-      "https://backend-api-i2oh.onrender.com/api/dashboard"
-    )
-
-    setStats(res.data)
-  }
-
 
   useEffect(() => {
 
-    fetchOrders()
     fetchProducts()
-    fetchDashboard()
 
   }, [])
-
-
-  // ================= ORDER ACTIONS =================
-
-  const updateStatus = async (id: string) => {
-
-    await axios.put(
-      `https://backend-api-i2oh.onrender.com/api/orders/${id}`,
-      {
-        status: "Delivered"
-      }
-    )
-
-    fetchOrders()
-  }
-
-
-  const deleteOrder = async (id: string) => {
-
-    await axios.delete(
-      `https://backend-api-i2oh.onrender.com/api/orders/${id}`
-    )
-
-    fetchOrders()
-    fetchDashboard()
-  }
-
-
-  // ================= PRODUCT ACTIONS =================
-
-  const addProduct = async () => {
-
-    if (
-      !newProduct.title ||
-      !newProduct.price ||
-      !newProduct.image
-    ) {
-      alert("Please fill all required fields")
-      return
-    }
-
-    await axios.post(
-      "https://backend-api-i2oh.onrender.com/api/products",
-      {
-        ...newProduct,
-        price: Number(newProduct.price)
-      }
-    )
-
-    fetchProducts()
-
-    setNewProduct({
-      title: "",
-      price: "",
-      image: "",
-      description: "",
-      sku: "",
-      flavour: ""
-    })
-
-    alert("Product Added Successfully 🚀")
-  }
-
-
-  const toggleStock = async (
-    id: string,
-    current: boolean
-  ) => {
-
-    await axios.put(
-      `https://backend-api-i2oh.onrender.com/api/products/${id}`,
-      {
-        inStock: !current
-      }
-    )
-
-    fetchProducts()
-  }
-
-
-  const deleteProduct = async (id: string) => {
-
-    await axios.delete(
-      `https://backend-api-i2oh.onrender.com/api/products/${id}`
-    )
-
-    fetchProducts()
-  }
 
 
   return (
@@ -159,205 +43,54 @@ export default function AdminPage() {
       background: "#0d0d0d",
       minHeight: "100vh",
       color: "#fff",
-      padding: "20px",
       fontFamily: "Arial"
     }}>
 
-      <h1 style={{
-        fontSize: "40px",
-        marginBottom: "30px"
-      }}>
-        ⚡ Admin Dashboard
-      </h1>
-
-
-      {/* ================= STATS ================= */}
+      {/* ================= HERO ================= */}
 
       <div style={{
-        display: "flex",
-        gap: "20px",
-        marginBottom: "40px",
-        flexWrap: "wrap"
+        padding: "60px 20px",
+        textAlign: "center"
       }}>
 
-        <div style={card}>
-          <h3>Total Orders</h3>
-          <h1>{stats.totalOrders}</h1>
-        </div>
+        <h1 style={{
+          fontSize: "55px",
+          marginBottom: "15px",
+          fontWeight: "bold"
+        }}>
+          HAPPY GAINZ 🚀
+        </h1>
 
-        <div style={card}>
-          <h3>Total Revenue</h3>
-          <h1>₹{stats.totalRevenue}</h1>
-        </div>
-
-        <div style={card}>
-          <h3>Avg Order</h3>
-          <h1>₹{Math.round(stats.avgOrderValue)}</h1>
-        </div>
+        <p style={{
+          fontSize: "20px",
+          color: "#ccc"
+        }}>
+          Premium Nutrition For Growing India 💪
+        </p>
 
       </div>
 
 
-      {/* ================= ORDERS ================= */}
-
-      <h2 style={{
-        marginBottom: "20px",
-        fontSize: "28px"
-      }}>
-        📦 Orders
-      </h2>
-
-      {orders.map((order) => (
-
-        <div key={order._id} style={box}>
-
-          <div>
-
-            <p><b>Name:</b> {order.name}</p>
-
-            <p><b>Phone:</b> {order.phone}</p>
-
-            <p><b>Total:</b> ₹{order.total}</p>
-
-            <p><b>Status:</b> {order.status}</p>
-
-          </div>
-
-          <div>
-
-            <button
-              onClick={() => updateStatus(order._id)}
-              style={greenBtn}
-            >
-              Delivered
-            </button>
-
-            <button
-              onClick={() => deleteOrder(order._id)}
-              style={redBtn}
-            >
-              Delete
-            </button>
-
-          </div>
-
-        </div>
-      ))}
-
-
-      {/* ================= ADD PRODUCT ================= */}
+      {/* ================= FEATURES ================= */}
 
       <div style={{
-        background: "#1a1a1a",
-        padding: "25px",
-        borderRadius: "20px",
-        marginTop: "50px",
-        marginBottom: "50px"
+        display: "flex",
+        justifyContent: "center",
+        gap: "20px",
+        flexWrap: "wrap",
+        marginBottom: "60px"
       }}>
 
-        <h2 style={{
-          marginBottom: "20px",
-          fontSize: "28px"
-        }}>
-          ➕ Add Product
-        </h2>
+        <div style={featureBox}>
+          🚚 Free Shipping
+        </div>
 
-        <div style={{
-          display: "grid",
-          gap: "15px"
-        }}>
+        <div style={featureBox}>
+          💰 Cash On Delivery
+        </div>
 
-          <input
-            placeholder="Product Title"
-            value={newProduct.title}
-            onChange={(e) =>
-              setNewProduct({
-                ...newProduct,
-                title: e.target.value
-              })
-            }
-            style={input}
-          />
-
-          <input
-            placeholder="Price"
-            value={newProduct.price}
-            onChange={(e) =>
-              setNewProduct({
-                ...newProduct,
-                price: e.target.value
-              })
-            }
-            style={input}
-          />
-
-          <input
-            placeholder="Image URL"
-            value={newProduct.image}
-            onChange={(e) =>
-              setNewProduct({
-                ...newProduct,
-                image: e.target.value
-              })
-            }
-            style={input}
-          />
-
-          <input
-            placeholder="SKU"
-            value={newProduct.sku}
-            onChange={(e) =>
-              setNewProduct({
-                ...newProduct,
-                sku: e.target.value
-              })
-            }
-            style={input}
-          />
-
-          <input
-            placeholder="Flavour"
-            value={newProduct.flavour}
-            onChange={(e) =>
-              setNewProduct({
-                ...newProduct,
-                flavour: e.target.value
-              })
-            }
-            style={input}
-          />
-
-          <textarea
-            placeholder="Description"
-            value={newProduct.description}
-            onChange={(e) =>
-              setNewProduct({
-                ...newProduct,
-                description: e.target.value
-              })
-            }
-            style={{
-              ...input,
-              minHeight: "120px"
-            }}
-          />
-
-          <button
-            onClick={addProduct}
-            style={{
-              background: "#00c853",
-              border: "none",
-              padding: "15px",
-              borderRadius: "12px",
-              color: "#fff",
-              fontWeight: "bold",
-              cursor: "pointer",
-              fontSize: "16px"
-            }}
-          >
-            Add Product 🚀
-          </button>
-
+        <div style={featureBox}>
+          🔄 Easy Returns
         </div>
 
       </div>
@@ -365,83 +98,102 @@ export default function AdminPage() {
 
       {/* ================= PRODUCTS ================= */}
 
-      <h2 style={{
-        marginBottom: "20px",
-        fontSize: "28px"
+      <div style={{
+        padding: "20px"
       }}>
-        🛒 Products
-      </h2>
 
-      {products.map((p) => (
+        <h2 style={{
+          fontSize: "35px",
+          marginBottom: "30px",
+          textAlign: "center"
+        }}>
+          🔥 Our Products
+        </h2>
 
-        <div key={p._id} style={box}>
+        {loading && (
 
-          <div style={{
-            display: "flex",
-            gap: "20px",
-            alignItems: "center"
+          <p style={{
+            textAlign: "center"
           }}>
+            Loading Products...
+          </p>
+        )}
 
-            <img
-              src={p.image}
-              width="100"
-              height="100"
-              style={{
-                borderRadius: "15px",
-                objectFit: "cover"
-              }}
-            />
 
-            <div>
+        <div style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fit,minmax(260px,1fr))",
+          gap: "25px"
+        }}>
 
-              <p style={{
-                fontSize: "20px",
-                fontWeight: "bold"
+          {products.map((p) => (
+
+            <div
+              key={p._id}
+              style={card}
+            >
+
+              <img
+                src={p.image}
+                alt={p.title}
+                style={{
+                  width: "100%",
+                  height: "220px",
+                  objectFit: "cover",
+                  borderRadius: "15px",
+                  marginBottom: "15px"
+                }}
+              />
+
+              <h3 style={{
+                fontSize: "24px",
+                marginBottom: "10px"
               }}>
                 {p.title}
+              </h3>
+
+              <p style={{
+                color: "#00e676",
+                fontSize: "22px",
+                fontWeight: "bold",
+                marginBottom: "10px"
+              }}>
+                ₹{p.price}
               </p>
 
-              <p>₹{p.price}</p>
+              <p style={{
+                color: "#bbb",
+                marginBottom: "10px"
+              }}>
+                {p.flavour}
+              </p>
 
-              <p>SKU: {p.sku}</p>
+              <p style={{
+                marginBottom: "15px",
+                color: "#ddd"
+              }}>
+                {p.description}
+              </p>
 
-              <p>Flavour: {p.flavour}</p>
-
-              <p>
+              <p style={{
+                marginBottom: "20px",
+                fontWeight: "bold"
+              }}>
                 {p.inStock
                   ? "✅ In Stock"
                   : "❌ Out Of Stock"}
               </p>
 
+              <button style={btn}>
+                Add To Cart 🛒
+              </button>
+
             </div>
-
-          </div>
-
-
-          <div>
-
-            <button
-              onClick={() =>
-                toggleStock(p._id, p.inStock)
-              }
-              style={greenBtn}
-            >
-              Toggle Stock
-            </button>
-
-            <button
-              onClick={() =>
-                deleteProduct(p._id)
-              }
-              style={redBtn}
-            >
-              Delete
-            </button>
-
-          </div>
+          ))}
 
         </div>
-      ))}
+
+      </div>
 
     </div>
   )
@@ -450,51 +202,27 @@ export default function AdminPage() {
 
 // ================= STYLES =================
 
+const featureBox = {
+  background: "#1a1a1a",
+  padding: "15px 25px",
+  borderRadius: "15px",
+  fontWeight: "bold"
+}
+
 const card = {
-  flex: 1,
-  minWidth: "220px",
   background: "#1a1a1a",
-  padding: "25px",
-  borderRadius: "20px"
-}
-
-const box = {
-  background: "#1a1a1a",
-  padding: "20px",
   borderRadius: "20px",
-  marginBottom: "20px",
-  display: "flex",
-  justifyContent: "space-between",
-  alignItems: "center",
-  flexWrap: "wrap"
+  padding: "20px"
 }
 
-const greenBtn = {
+const btn = {
+  width: "100%",
   background: "#00c853",
   border: "none",
-  color: "#fff",
-  padding: "12px 18px",
-  borderRadius: "10px",
-  marginRight: "10px",
-  cursor: "pointer",
-  fontWeight: "bold"
-}
-
-const redBtn = {
-  background: "#ff1744",
-  border: "none",
-  color: "#fff",
-  padding: "12px 18px",
-  borderRadius: "10px",
-  cursor: "pointer",
-  fontWeight: "bold"
-}
-
-const input = {
-  background: "#111",
-  border: "1px solid #333",
-  padding: "15px",
+  padding: "14px",
   borderRadius: "12px",
   color: "#fff",
-  fontSize: "15px"
+  fontWeight: "bold",
+  cursor: "pointer",
+  fontSize: "16px"
 }

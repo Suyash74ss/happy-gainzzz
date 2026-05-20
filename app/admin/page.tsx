@@ -7,14 +7,15 @@ export default function AdminPage() {
 
   const [orders, setOrders] = useState<any[]>([])
   const [products, setProducts] = useState<any[]>([])
+
   const [newProduct, setNewProduct] = useState({
-  title: "",
-  price: "",
-  image: "",
-  description: "",
-  sku: "",
-  flavour: ""
-})
+    title: "",
+    price: "",
+    image: "",
+    description: "",
+    sku: "",
+    flavour: ""
+  })
 
   const [stats, setStats] = useState({
     totalOrders: 0,
@@ -27,10 +28,9 @@ export default function AdminPage() {
 
   const fetchOrders = async () => {
 
-    const res =
-      await axios.get(
-        "https://backend-api-i2oh.onrender.com/api/orders"
-      )
+    const res = await axios.get(
+      "https://backend-api-i2oh.onrender.com/api/orders"
+    )
 
     setOrders(res.data)
   }
@@ -38,10 +38,9 @@ export default function AdminPage() {
 
   const fetchProducts = async () => {
 
-    const res =
-      await axios.get(
-        "https://backend-api-i2oh.onrender.com/api/products"
-      )
+    const res = await axios.get(
+      "https://backend-api-i2oh.onrender.com/api/products"
+    )
 
     setProducts(res.data)
   }
@@ -49,10 +48,9 @@ export default function AdminPage() {
 
   const fetchDashboard = async () => {
 
-    const res =
-      await axios.get(
-        "https://backend-api-i2oh.onrender.com/api/dashboard"
-      )
+    const res = await axios.get(
+      "https://backend-api-i2oh.onrender.com/api/dashboard"
+    )
 
     setStats(res.data)
   }
@@ -97,24 +95,42 @@ export default function AdminPage() {
 
   const addProduct = async () => {
 
-  await axios.post(
-    "https://backend-api-i2oh.onrender.com/api/products",
-    newProduct
-  )
+    if (
+      !newProduct.title ||
+      !newProduct.price ||
+      !newProduct.image
+    ) {
+      alert("Please fill all required fields")
+      return
+    }
 
-  fetchProducts()
+    await axios.post(
+      "https://backend-api-i2oh.onrender.com/api/products",
+      {
+        ...newProduct,
+        price: Number(newProduct.price)
+      }
+    )
 
-  setNewProduct({
-    title: "",
-    price: "",
-    image: "",
-    description: "",
-    sku: "",
-    flavour: ""
-  })
-}
+    fetchProducts()
 
-  const toggleStock = async (id: string, current: boolean) => {
+    setNewProduct({
+      title: "",
+      price: "",
+      image: "",
+      description: "",
+      sku: "",
+      flavour: ""
+    })
+
+    alert("Product Added Successfully 🚀")
+  }
+
+
+  const toggleStock = async (
+    id: string,
+    current: boolean
+  ) => {
 
     await axios.put(
       `https://backend-api-i2oh.onrender.com/api/products/${id}`,
@@ -143,11 +159,12 @@ export default function AdminPage() {
       background: "#0d0d0d",
       minHeight: "100vh",
       color: "#fff",
-      padding: "20px"
+      padding: "20px",
+      fontFamily: "Arial"
     }}>
 
       <h1 style={{
-        fontSize: "35px",
+        fontSize: "40px",
         marginBottom: "30px"
       }}>
         ⚡ Admin Dashboard
@@ -159,7 +176,8 @@ export default function AdminPage() {
       <div style={{
         display: "flex",
         gap: "20px",
-        marginBottom: "40px"
+        marginBottom: "40px",
+        flexWrap: "wrap"
       }}>
 
         <div style={card}>
@@ -182,7 +200,10 @@ export default function AdminPage() {
 
       {/* ================= ORDERS ================= */}
 
-      <h2 style={{ marginBottom: "20px" }}>
+      <h2 style={{
+        marginBottom: "20px",
+        fontSize: "28px"
+      }}>
         📦 Orders
       </h2>
 
@@ -192,13 +213,13 @@ export default function AdminPage() {
 
           <div>
 
-            <p><b>{order.name}</b></p>
+            <p><b>Name:</b> {order.name}</p>
 
-            <p>{order.phone}</p>
+            <p><b>Phone:</b> {order.phone}</p>
 
-            <p>₹{order.total}</p>
+            <p><b>Total:</b> ₹{order.total}</p>
 
-            <p>Status: {order.status}</p>
+            <p><b>Status:</b> {order.status}</p>
 
           </div>
 
@@ -226,122 +247,127 @@ export default function AdminPage() {
 
       {/* ================= ADD PRODUCT ================= */}
 
-<div style={{
-  background: "#1a1a1a",
-  padding: "20px",
-  borderRadius: "15px",
-  marginBottom: "40px"
-}}>
+      <div style={{
+        background: "#1a1a1a",
+        padding: "25px",
+        borderRadius: "20px",
+        marginTop: "50px",
+        marginBottom: "50px"
+      }}>
 
-  <h2 style={{ marginBottom: "20px" }}>
-    ➕ Add Product
-  </h2>
+        <h2 style={{
+          marginBottom: "20px",
+          fontSize: "28px"
+        }}>
+          ➕ Add Product
+        </h2>
 
-  <div style={{
-    display: "grid",
-    gap: "15px"
-  }}>
+        <div style={{
+          display: "grid",
+          gap: "15px"
+        }}>
 
-    <input
-      placeholder="Title"
-      value={newProduct.title}
-      onChange={(e) =>
-        setNewProduct({
-          ...newProduct,
-          title: e.target.value
-        })
-      }
-      style={input}
-    />
+          <input
+            placeholder="Product Title"
+            value={newProduct.title}
+            onChange={(e) =>
+              setNewProduct({
+                ...newProduct,
+                title: e.target.value
+              })
+            }
+            style={input}
+          />
 
-    <input
-      placeholder="Price"
-      value={newProduct.price}
-      onChange={(e) =>
-        setNewProduct({
-          ...newProduct,
-          price: e.target.value
-        })
-      }
-      style={input}
-    />
+          <input
+            placeholder="Price"
+            value={newProduct.price}
+            onChange={(e) =>
+              setNewProduct({
+                ...newProduct,
+                price: e.target.value
+              })
+            }
+            style={input}
+          />
 
-    <input
-      placeholder="Image URL"
-      value={newProduct.image}
-      onChange={(e) =>
-        setNewProduct({
-          ...newProduct,
-          image: e.target.value
-        })
-      }
-      style={input}
-    />
+          <input
+            placeholder="Image URL"
+            value={newProduct.image}
+            onChange={(e) =>
+              setNewProduct({
+                ...newProduct,
+                image: e.target.value
+              })
+            }
+            style={input}
+          />
 
-    <input
-      placeholder="SKU"
-      value={newProduct.sku}
-      onChange={(e) =>
-        setNewProduct({
-          ...newProduct,
-          sku: e.target.value
-        })
-      }
-      style={input}
-    />
+          <input
+            placeholder="SKU"
+            value={newProduct.sku}
+            onChange={(e) =>
+              setNewProduct({
+                ...newProduct,
+                sku: e.target.value
+              })
+            }
+            style={input}
+          />
 
-    <input
-      placeholder="Flavour"
-      value={newProduct.flavour}
-      onChange={(e) =>
-        setNewProduct({
-          ...newProduct,
-          flavour: e.target.value
-        })
-      }
-      style={input}
-    />
+          <input
+            placeholder="Flavour"
+            value={newProduct.flavour}
+            onChange={(e) =>
+              setNewProduct({
+                ...newProduct,
+                flavour: e.target.value
+              })
+            }
+            style={input}
+          />
 
-    <textarea
-      placeholder="Description"
-      value={newProduct.description}
-      onChange={(e) =>
-        setNewProduct({
-          ...newProduct,
-          description: e.target.value
-        })
-      }
-      style={{
-        ...input,
-        minHeight: "100px"
-      }}
-    />
+          <textarea
+            placeholder="Description"
+            value={newProduct.description}
+            onChange={(e) =>
+              setNewProduct({
+                ...newProduct,
+                description: e.target.value
+              })
+            }
+            style={{
+              ...input,
+              minHeight: "120px"
+            }}
+          />
 
-    <button
-      onClick={addProduct}
-      style={{
-        background: "#00c853",
-        border: "none",
-        padding: "12px",
-        borderRadius: "10px",
-        color: "#fff",
-        fontWeight: "bold",
-        cursor: "pointer"
-      }}
-    >
-      Add Product 🚀
-    </button>
+          <button
+            onClick={addProduct}
+            style={{
+              background: "#00c853",
+              border: "none",
+              padding: "15px",
+              borderRadius: "12px",
+              color: "#fff",
+              fontWeight: "bold",
+              cursor: "pointer",
+              fontSize: "16px"
+            }}
+          >
+            Add Product 🚀
+          </button>
 
-  </div>
+        </div>
 
-</div>
+      </div>
 
 
       {/* ================= PRODUCTS ================= */}
 
       <h2 style={{
-        marginTop: "50px",
-        marginBottom: "20px"
+        marginBottom: "20px",
+        fontSize: "28px"
       }}>
         🛒 Products
       </h2>
@@ -350,30 +376,44 @@ export default function AdminPage() {
 
         <div key={p._id} style={box}>
 
-          <div>
+          <div style={{
+            display: "flex",
+            gap: "20px",
+            alignItems: "center"
+          }}>
 
             <img
               src={p.image}
-              width="70"
+              width="100"
+              height="100"
               style={{
-                borderRadius: "10px",
-                marginBottom: "10px"
+                borderRadius: "15px",
+                objectFit: "cover"
               }}
             />
 
-            <p><b>{p.title}</b></p>
+            <div>
 
-            <p>₹{p.price}</p>
+              <p style={{
+                fontSize: "20px",
+                fontWeight: "bold"
+              }}>
+                {p.title}
+              </p>
 
-            <p>SKU: {p.sku}</p>
+              <p>₹{p.price}</p>
 
-            <p>Flavour: {p.flavour}</p>
+              <p>SKU: {p.sku}</p>
 
-            <p>
-              {p.inStock
-                ? "✅ In Stock"
-                : "❌ Out Of Stock"}
-            </p>
+              <p>Flavour: {p.flavour}</p>
+
+              <p>
+                {p.inStock
+                  ? "✅ In Stock"
+                  : "❌ Out Of Stock"}
+              </p>
+
+            </div>
 
           </div>
 
@@ -412,44 +452,49 @@ export default function AdminPage() {
 
 const card = {
   flex: 1,
+  minWidth: "220px",
   background: "#1a1a1a",
-  padding: "20px",
-  borderRadius: "15px"
+  padding: "25px",
+  borderRadius: "20px"
 }
 
 const box = {
   background: "#1a1a1a",
   padding: "20px",
-  borderRadius: "15px",
-  marginBottom: "15px",
+  borderRadius: "20px",
+  marginBottom: "20px",
   display: "flex",
   justifyContent: "space-between",
-  alignItems: "center"
+  alignItems: "center",
+  flexWrap: "wrap"
 }
 
 const greenBtn = {
   background: "#00c853",
   border: "none",
   color: "#fff",
-  padding: "10px 15px",
-  borderRadius: "8px",
+  padding: "12px 18px",
+  borderRadius: "10px",
   marginRight: "10px",
-  cursor: "pointer"
+  cursor: "pointer",
+  fontWeight: "bold"
 }
 
 const redBtn = {
-  background: "red",
+  background: "#ff1744",
   border: "none",
   color: "#fff",
-  padding: "10px 15px",
-  borderRadius: "8px",
-  cursor: "pointer"
+  padding: "12px 18px",
+  borderRadius: "10px",
+  cursor: "pointer",
+  fontWeight: "bold"
 }
 
 const input = {
   background: "#111",
   border: "1px solid #333",
-  padding: "12px",
-  borderRadius: "10px",
-  color: "#fff"
+  padding: "15px",
+  borderRadius: "12px",
+  color: "#fff",
+  fontSize: "15px"
 }
